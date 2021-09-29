@@ -68,7 +68,24 @@ public class HSU {
             for (WebElement element : elements) {
                 courseLinkURL.add(element.findElement(By.className("course_link")).getAttribute("href"));
             }
-            thisWeek(courseLinkURL,videoLinkURL, driver, scanner);
+
+            if (courseLinkURL.size() > 0) {
+                driver.get(courseLinkURL.get(0));
+                if (!courseLinkURL.get(0).equals(driver.getCurrentUrl())) {
+                    driver.findElement(By.id("btn-kakaoAuth")).click();
+                    driver.findElement(By.id("btn-send-kakao")).click();
+                    System.out.println("Please complete authentication.");
+                    while (!courseLinkURL.get(0).equals(driver.getCurrentUrl())) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            break;
+                        }
+                    }
+                }
+            }
+
+            thisWeek(courseLinkURL, videoLinkURL, driver, scanner);
 
         }catch(Exception e){
             e.printStackTrace();
@@ -150,9 +167,9 @@ public class HSU {
             List<WebElement> videos = content.findElements(By.className("activityinstance"));
             for (WebElement video : videos) {
                 String url = "";
-                try{
+                try {
                     url = video.findElement(By.tagName("a")).getAttribute("href");
-                }catch(NoSuchElementException ignored){
+                } catch (NoSuchElementException ignored) {
                 }
 
                 if(url.contains("vod")){
